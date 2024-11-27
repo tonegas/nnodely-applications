@@ -3,7 +3,7 @@ import os
 # append a new directory to sys.path
 sys.path.append(os.getcwd())
 
-from neu4mes import *
+from nnodely import *
 
 # This example shows how to fit a simple linear model.
 # The model chosen is a mass spring damper.
@@ -23,7 +23,7 @@ xk1 = Output('x[k+1]', Fir(parameter_init=init_negexp)(x.tw(0.2))+Fir(parameter_
 dxk1 = Output('dx[k+1]', Fir(Fir(parameter_init=init_negexp)(x.tw(0.2))+Fir(parameter_init=init_constant,parameter_init_params={'value':1})(F.last())))
 
 # Add the neural models to the neu4mes structure
-mass_spring_damper = Neu4mes(seed=0)
+mass_spring_damper = Modely(seed=0)
 mass_spring_damper.addModel('xk1',xk1)
 mass_spring_damper.addModel('dxk1',dxk1)
 
@@ -39,7 +39,7 @@ mass_spring_damper.neuralizeModel(sample_time = 0.05) # The sampling time depend
 
 # Data load
 data_struct = ['time','x','dx','F']
-data_folder = './tutorials/datasets/mass-spring-damper/data/'
+data_folder = './dataset/data/'
 mass_spring_damper.loadData(name='mass_spring_dataset', source=data_folder, format=data_struct, delimiter=';')
 
 #Neural network train not reccurent training
@@ -62,27 +62,3 @@ mass_spring_damper.trainModel(splits=[70,20,10], training_params = params, close
 
 # Add visualizer and show the results on the loaded dataset
 vis.showResult("validation_mass_spring_dataset_0.20")
-
-# ## Make predictions
-# sample = mass_spring_damper.get_random_samples(dataset='mass_spring_dataset', window=200)
-# result = mass_spring_damper(sample, sampled=True)
-# true_position = [pos[-1].item() for pos in sample['x']]
-# true_velocity = [vel.squeeze().item() for vel in sample['dx']]
-# pred_position = result['next_x']
-# pred_velocity = result['next_dx']
-#
-# ## Plot predictions
-# import matplotlib.pyplot as plt
-# fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 5))
-# axes[0].plot(true_position, label='True Position', marker='o')
-# axes[0].plot(pred_position, label='Predicted Position', marker='x')
-# axes[0].set_xlabel('Time')
-# axes[0].set_ylabel('Position')
-# axes[0].set_title('Position Inference')
-# axes[1].plot(true_velocity, label='True Velocity', marker='o')
-# axes[1].plot(pred_velocity, label='Predicted Velocity', marker='x')
-# axes[1].set_xlabel('Time')
-# axes[1].set_ylabel('Velocity')
-# axes[1].set_title('Velocity Inference')
-# plt.tight_layout()
-# plt.show()
