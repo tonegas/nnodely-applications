@@ -1,4 +1,4 @@
-nnodely==0.14.2
+nnodely
 scipy==1.14.0
 mpld3==0.5.10
 ipykernel==6.29.5
