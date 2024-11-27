@@ -1,9 +1,10 @@
 import sys
 import os
+import numpy as np
 # append a new directory to sys.path
 sys.path.append(os.getcwd())
 
-from neu4mes import *
+from nnodely import *
 
 # Custom visualizer for results
 class FunctionVisualizer(TextVisualizer):
@@ -56,8 +57,8 @@ data_b = -3
 data_c = 2
 dataset = {'x': data_x, 'target_y': parametric_fun2(data_x,data_a,data_b,data_c)}
 
-# Create the neu4mes object
-opt_fun = Neu4mes(visualizer=FunctionVisualizer())
+# Create the nnodely object
+opt_fun = Modely(visualizer=FunctionVisualizer())
 opt_fun.addModel('all',[y1,y2,y3,y4])
 
 # Create objectives of the minimization

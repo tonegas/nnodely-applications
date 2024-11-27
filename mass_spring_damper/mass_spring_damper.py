@@ -22,7 +22,7 @@ F = Input('F') # Force
 xk1 = Output('x[k+1]', Fir(parameter_init=init_negexp)(x.tw(0.2))+Fir(parameter_init=init_constant,parameter_init_params={'value':1})(F.last()))
 dxk1 = Output('dx[k+1]', Fir(Fir(parameter_init=init_negexp)(x.tw(0.2))+Fir(parameter_init=init_constant,parameter_init_params={'value':1})(F.last())))
 
-# Add the neural models to the neu4mes structure
+# Add the neural models to the nnodely structure
 mass_spring_damper = Modely(seed=0)
 mass_spring_damper.addModel('xk1',xk1)
 mass_spring_damper.addModel('dxk1',dxk1)

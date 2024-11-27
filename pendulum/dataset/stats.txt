@@ -1,0 +1,10 @@
+simulations;100
+elapsed_time;2.154
+total_samples;40100
+param_time;20.000
+param_sampling_time;0.050
+m;1.000
+l;1.000
+theta_0;-3.142;3.142
+omega_0;-0.010;0.010
+torque;-0.010;0.010
