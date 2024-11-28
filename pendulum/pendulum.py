@@ -29,15 +29,15 @@ pendolum.neuralizeModel(0.05)
 
 # Data load
 data_struct = ['time','theta','omega','cos(theta)','sin(theta)','torque']
-data_folder = './dataset/data/'
-pendolum.loadData(name='pendulum_dataset', source=data_folder, format=data_struct, delimiter=';')
+data_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'dataset','data')
+pendolum.loadData(name='data', source=data_folder, format=data_struct, delimiter=';')
 
 # Neural network train
 params = {'train_batch_size':32, 'num_of_epochs':50}
 pendolum.trainModel(splits=[70,20,10], lr=0.001, training_params=params)
 
 ## Neural network Predict
-sample = pendolum.getSamples(dataset='pendulum_dataset', window=1)
+sample = pendolum.getSamples(dataset='data', window=1)
 
 pendolum.exportPythonModel()
 pendolum.exportONNX(['theta','torque'],['omega_pred'])

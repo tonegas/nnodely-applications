@@ -39,7 +39,7 @@ mass_spring_damper.neuralizeModel(sample_time = 0.05) # The sampling time depend
 
 # Data load
 data_struct = ['time','x','dx','F']
-data_folder = './dataset/data/'
+data_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'dataset','data')
 mass_spring_damper.loadData(name='mass_spring_dataset', source=data_folder, format=data_struct, delimiter=';')
 
 #Neural network train not reccurent training

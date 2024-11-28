@@ -5,9 +5,9 @@ class TracerModel(torch.nn.Module):
         super().__init__()
         self.all_parameters = {}
         self.all_constants = {}
-        self.all_parameters["PFir5p"] = torch.nn.Parameter(torch.tensor([[0.11089867353439331]]), requires_grad=True)
-        self.all_parameters["PFir3p"] = torch.nn.Parameter(torch.tensor([[0.12483316659927368], [-0.21201173961162567], [0.15220901370048523], [0.48128363490104675], [0.41735875606536865], [0.04633580893278122], [0.7424114346504211], [0.6202034950256348], [0.7321600317955017], [0.7015644907951355]]), requires_grad=True)
-        self.all_parameters["PFir4p"] = torch.nn.Parameter(torch.tensor([[-1.4100865125656128], [-0.8384586572647095], [-0.40129268169403076], [-0.43501442670822144], [0.37327954173088074], [0.1730206310749054], [0.2257763147354126], [0.3387879431247711], [0.9121718406677246], [1.0615578889846802]]), requires_grad=True)
+        self.all_parameters["PFir5p"] = torch.nn.Parameter(torch.tensor([[0.14562338590621948]]), requires_grad=True)
+        self.all_parameters["PFir3p"] = torch.nn.Parameter(torch.tensor([[0.03213246539235115], [-0.021538889035582542], [0.053095363080501556], [0.34138908982276917], [0.11427462100982666], [0.6046465039253235], [0.38414159417152405], [0.5539029836654663], [0.856288731098175], [0.6727710962295532]]), requires_grad=True)
+        self.all_parameters["PFir4p"] = torch.nn.Parameter(torch.tensor([[-0.8496224284172058], [-0.8890238404273987], [-0.730859100818634], [-0.47441890835762024], [-0.08027598261833191], [-0.009404491633176804], [0.10820397734642029], [0.8905107378959656], [1.0606800317764282], [0.9743391871452332]]), requires_grad=True)
         self.all_parameters = torch.nn.ParameterDict(self.all_parameters)
         self.all_constants = torch.nn.ParameterDict(self.all_constants)
     def init_states(self, state_model, connect = {}, reset_states = False):
