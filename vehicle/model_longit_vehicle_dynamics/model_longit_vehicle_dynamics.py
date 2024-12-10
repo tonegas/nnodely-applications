@@ -24,7 +24,7 @@ from nnodely import *
 from nnodely.earlystopping import select_best_model
 
 # Create nnodely structure
-vehicle = nnodely(visualizer=TextVisualizer(1),seed=2) #MPLVisualizer()
+vehicle = nnodely(visualizer=MPLVisualizer(),seed=2) #MPLVisualizer()
 
 # Dimensions of the layers
 n  = 25
@@ -53,7 +53,7 @@ out = Output('accelleration', air_drag_force+breaking_force+gravity_force+engine
 vehicle.addModel('acc',[out])
 vehicle.addMinimize('acc_error', acc.last(), out, loss_function='rmse')
 vehicle.neuralizeModel(0.05)
-vehicle.neuralizeModel(0.05)
+#vehicle.neuralizeModel(0.05)
 
 # Load the training and the validation dataset
 data_struct = ['vel','trq','brk','gear','alt','acc']
