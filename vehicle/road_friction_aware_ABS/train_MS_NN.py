@@ -28,7 +28,7 @@ plt.rc('font', family='serif', size=18)
 # import the nnodely library
 from nnodely import *
 
-# set a random seed
+# set a random seed for reproducibility
 random_seed = 10
 
 # ----------------------------------------------------------
@@ -92,7 +92,7 @@ def acc_model_based(Ty1,Ty2,v, mass,Kd,Cv,Cr):
     # Ty1,Ty2,v --> front and rear wheel torques and vehicle speed
 
     # learnable parameters:
-    # Kd,Cv,Cr --> aero drag, linear drag and rolling resistance coefficients
+    # ma,,Kd,Cv,Cr --> vehicle mass, aero drag, linear drag and rolling resistance coefficients
     
     # non-trainable parameters
     r1 = r2   = 0.2286     # [m] front and rear wheel radii 

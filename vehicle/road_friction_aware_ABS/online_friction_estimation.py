@@ -15,95 +15,78 @@ This script performs road friction estimation through robust model selection, us
 # initial setup
 # ----------------------------------------------------------
 
+# import the necessary libraries
 import csv
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-plt.rc('text', usetex=True)
-plt.rc('font', family='serif', size=18)
-
 import os
 import glob
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif', size=18)
 
 # import the nnodely library
 from nnodely import *
 
-# Create nnodely structure
-vehicle_dry  = nnodely(visualizer=MPLVisualizer(), seed=10)
-vehicle_wet  = nnodely(visualizer=MPLVisualizer(), seed=10)
-vehicle_snow = nnodely(visualizer=MPLVisualizer(), seed=10)
-vehicle_ice  = nnodely(visualizer=MPLVisualizer(), seed=10)
+# set a random seed for reproducibility
+random_seed = 10
 
-# Find the root where the model parameters are saved
-current_dir = os.path.dirname(os.path.abspath(__file__))
-json_dir = os.path.join(current_dir, "JSON")
+# ----------------------------------------------------------
+# load the trained models
+# ----------------------------------------------------------
 
-# Decide if take the NN models trained without (0) or with (1) noise
+# directory in which the trained neural models are saved
+trained_models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'trained_models')
 
-json_dry = os.path.join(json_dir, "model_parameters_dry_noise_MS.json")
-json_wet = os.path.join(json_dir, "model_parameters_wet_noise_MS.json")
-json_snow = os.path.join(json_dir, "model_parameters_snow_noise_MS.json")
-json_ice = os.path.join(json_dir, "model_parameters_ice_noise_MS.json")
+# create the models with the nnodely library
+MS_NN_dry_road  = nnodely(visualizer=MPLVisualizer(), seed=random_seed)
+MS_NN_wet_road  = nnodely(visualizer=MPLVisualizer(), seed=random_seed)
+MS_NN_snow_road = nnodely(visualizer=MPLVisualizer(), seed=random_seed)
+MS_NN_ice_road  = nnodely(visualizer=MPLVisualizer(), seed=random_seed)
 
-# Dataset selection
+# load the parameters of the trained model from the corresponding JSON files
+with open(os.path.join(trained_models_dir, 'dry_road', 'net.json'), 'r') as json_file:
+    MS_NN_dry_road.model_def = json.load(json_file)
+with open(os.path.join(trained_models_dir, 'wet_road', 'net.json'), 'r') as json_file:
+    MS_NN_wet_road.model_def = json.load(json_file)
+with open(os.path.join(trained_models_dir, 'snow_road', 'net.json'), 'r') as json_file:
+    MS_NN_snow_road.model_def = json.load(json_file)
+with open(os.path.join(trained_models_dir, 'ice_road', 'net.json'), 'r') as json_file:
+    MS_NN_ice_road.model_def = json.load(json_file)
 
-name_data = 'test_noise'
-file_csv = 'test_noise.csv'
-csv_folder_name = 'data_test'
+# sampling time for the input windows (this sampling time can be different from the one of the dataset: an interpolation will be automatically performed)
+sample_time = 0.05  # [s]
 
-# Print dataset selection
-print("It has been selected all json files (dry/wet/snow/ice) generating data in [", name_data, "] conditions")
+# number of samples in the input windows (for the past engine torque/brake pedal values, up to current time step)
+n = 10   
 
-# Acquire the sample rate value
-file = os.path.join('./nn_abs/datasets/', csv_folder_name, file_csv)
-abs_file = os.path.abspath(file)
-with open(abs_file, mode='r') as file:
-    lettore_csv = csv.reader(file)
-    next(lettore_csv)  # Skip header
-    first = next(lettore_csv)
-    second = next(lettore_csv)
-    sample_ratio = float(second[0]) - float(first[0])
-print(f"The sample rate of the provided datasets is: {sample_ratio}")
+# visualize the models and check that they have been correctly loaded
+MS_NN_dry_road.neuralizeModel()
+MS_NN_wet_road.neuralizeModel()
+MS_NN_snow_road.neuralizeModel()
+MS_NN_ice_road.neuralizeModel()
 
-# ______________ SECTION 1: LOAD THE TRAINED PARAMETERS ______________ #
+# ----------------------------------------------------------
+# load the test dataset
+# ----------------------------------------------------------
 
-# Load the model parameters from the JSON file
-with open(json_dry, 'r') as infile:
-    model_parameters_dry = json.load(infile)
-with open(json_wet, 'r') as infile:
-    model_parameters_wet = json.load(infile)
-with open(json_snow, 'r') as infile:
-    model_parameters_snow = json.load(infile)
-with open(json_ice, 'r') as infile:
-    model_parameters_ice = json.load(infile)
+# folder containing the test dataset
+test_set_folder_name = 'data_test'
+test_set_folder      = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'datasets', test_set_folder_name)
 
-# Assign the loaded values from JSON to a model
-vehicle_dry.model_def = model_parameters_dry
-vehicle_wet.model_def = model_parameters_wet
-vehicle_snow.model_def = model_parameters_snow
-vehicle_ice.model_def = model_parameters_ice
+# structure of the data in the dataset
+data_struct = ['time','brake_pedal','','speed','acc','','','','','motor_torque']
+MS_NN_dry_road.loadData(name=test_set_folder_name,  source=test_set_folder, format=data_struct, skiplines=1)
+MS_NN_wet_road.loadData(name=test_set_folder_name,  source=test_set_folder, format=data_struct, skiplines=1)
+MS_NN_snow_road.loadData(name=test_set_folder_name, source=test_set_folder, format=data_struct, skiplines=1)
+MS_NN_ice_road.loadData(name=test_set_folder_name,  source=test_set_folder, format=data_struct, skiplines=1)
 
-# Visualize the model and check that all is correctly loaded
-vehicle_dry.neuralizeModel()
-vehicle_wet.neuralizeModel()
-vehicle_snow.neuralizeModel()
-vehicle_ice.neuralizeModel()
-
-# ______________ SECTION 2: LOAD THE DATASET ______________ #
-
-data_struct = ['time', 'brake_pedal', 'gas_pedal', 'speed', 'acc', 'in_tw_rr_brake', 'in_tw_rl_brake', 'in_tw_fr_brake', 'in_tw_fl_brake', 'wheel_torque_rear', 'f_rot_speed', 'r_rot_speed', 'ABS_FRONT_ON_OFF', 'ABS_REAR_ON_OFF']
-data_folder = os.path.join('./nn_abs/datasets/', csv_folder_name)
-vehicle_dry.loadData(name=csv_folder_name, source=data_folder, format=data_struct, skiplines=1)
-vehicle_wet.loadData(name=csv_folder_name, source=data_folder, format=data_struct, skiplines=1)
-vehicle_snow.loadData(name=csv_folder_name, source=data_folder, format=data_struct, skiplines=1)
-vehicle_ice.loadData(name=csv_folder_name, source=data_folder, format=data_struct, skiplines=1)
-
-# Find all the csv files in the root
-csv_files_path = os.path.join('./nn_abs/datasets/', csv_folder_name, '*.csv')
+# find all the csv files in the root
+csv_files_path = os.path.join(test_set_folder, '*.csv')
 csv_files = glob.glob(csv_files_path)
 
-# Save what concerns with 'acc' values
+# store the recorded longitudinal acceleration values
 acc_lengths = {}
 acc_value = []
 for file in csv_files:
@@ -116,72 +99,61 @@ for file in csv_files:
         acc_lengths[file] = None
         print(f"Column 'acc'not found in file: {file}")
 
+# find the number of samples in the dataset
 n_file = 0
 num_el = 0
 initial_num_el = 0
-
-# Define the sample window
-sw = 10
-
-# Select the correct data
 for file, length in acc_lengths.items():
-    print(f"File: {file}, lenght 'acc': {length}")
     n_file = n_file+1
     num_el = num_el + acc_lengths[file]
 
 initial_num_el = num_el
-num_el = num_el -n_file*(sw - 1)
-print("Number of file in ",csv_folder_name, "are: ", n_file)
-print("The correspondig total values usable as unique dataset are: ", num_el)
-time = np.arange(0, num_el * sample_ratio, sample_ratio)[:num_el] 
-print(time)
+num_el = num_el -n_file*(n - 1)
+# time vector
+time = np.arange(0, num_el * sample_time, sample_time)[:num_el] 
 
+# ----------------------------------------------------------
+# run the models on the test dataset
+# ----------------------------------------------------------
 
-# ______________ SECTION 3: RUN THE TRAINED MODEL WITH THE LOADED DATASET ______________ #
-
-#Dry
-sample_test_set_dry = vehicle_dry.getSamples(csv_folder_name, index=0, window=num_el)
-out_nn_test_set_dry = vehicle_dry(sample_test_set_dry, sampled=True)
+# dry road
+sample_test_set_dry = MS_NN_dry_road.getSamples(test_set_folder_name, index=0, window=num_el)
+out_nn_test_set_dry = MS_NN_dry_road(sample_test_set_dry, sampled=True)
 out_nn_test_set_extract_dry = out_nn_test_set_dry['acceleration']
-# extract the samples
 samples_test_set_extract_dry = np.zeros((len(sample_test_set_dry['acc']),1))
 for i in range(0,len(samples_test_set_extract_dry)):
   samples_test_set_extract_dry[i] = sample_test_set_dry['acc'][i]
 
-#Wet
-sample_test_set_wet = vehicle_wet.getSamples(csv_folder_name, index=0, window=num_el)
-out_nn_test_set_wet = vehicle_wet(sample_test_set_wet, sampled=True)
+# wet road
+sample_test_set_wet = MS_NN_wet_road.getSamples(test_set_folder_name, index=0, window=num_el)
+out_nn_test_set_wet = MS_NN_wet_road(sample_test_set_wet, sampled=True)
 out_nn_test_set_extract_wet = out_nn_test_set_wet['acceleration']
-# extract the samples
 samples_test_set_extract_wet = np.zeros((len(sample_test_set_wet['acc']),1))
 for i in range(0,len(samples_test_set_extract_wet)):
   samples_test_set_extract_wet[i] = sample_test_set_wet['acc'][i]
 
-#Snow
-sample_test_set_snow = vehicle_snow.getSamples(csv_folder_name, index=0, window=num_el)
-out_nn_test_set_snow = vehicle_snow(sample_test_set_snow, sampled=True)
+# snowy road
+sample_test_set_snow = MS_NN_snow_road.getSamples(test_set_folder_name, index=0, window=num_el)
+out_nn_test_set_snow = MS_NN_snow_road(sample_test_set_snow, sampled=True)
 out_nn_test_set_extract_snow = out_nn_test_set_snow['acceleration']
-# extract the samples
 samples_test_set_extract_snow = np.zeros((len(sample_test_set_snow['acc']),1))
 for i in range(0,len(samples_test_set_extract_snow)):
   samples_test_set_extract_snow[i] = sample_test_set_snow['acc'][i]
 
-#Ice
-sample_test_set_ice = vehicle_ice.getSamples(csv_folder_name, index=0, window=num_el)
-out_nn_test_set_ice = vehicle_ice(sample_test_set_ice, sampled=True)
+# icy road
+sample_test_set_ice = MS_NN_ice_road.getSamples(test_set_folder_name, index=0, window=num_el)
+out_nn_test_set_ice = MS_NN_ice_road(sample_test_set_ice, sampled=True)
 out_nn_test_set_extract_ice = out_nn_test_set_ice['acceleration']
-# extract the samples
 samples_test_set_extract_ice = np.zeros((len(sample_test_set_ice['acc']),1))
 for i in range(0,len(samples_test_set_extract_ice)):
   samples_test_set_extract_ice[i] = sample_test_set_ice['acc'][i]
-
 
 # plot the results
 plt.figure(figsize=(10, 5))
 plt.subplot(4, 1, 1)
 plt.plot(time, samples_test_set_extract_dry,label='Target')
 plt.plot(time, out_nn_test_set_extract_dry,label='NN dry trained',linestyle='--')
-#plt.title('Dry trained NN')
+# plt.title('Dry trained NN')
 plt.ylabel(r'acc [$m/s^2$]')
 plt.legend(fontsize=11, facecolor='white', framealpha=1.0)
 plt.grid()
@@ -223,7 +195,7 @@ plt.xticks(np.arange(0, max(time) +1, 10))
 plt.xlim(0, 100)
 
 plt.show()
-
+'''
 # COMPARISON DRY-ICE
 plt.figure(figsize=(10, 5))
 plt.subplot(2, 1, 1)
@@ -459,13 +431,13 @@ for file, length in abs_rear_lengths.items():
     print(f"File: {file}, lenght 'ABS_REAR_ON_OFF': {length}")
     n_file = n_file+1
     num_el_abs_rear = num_el_abs_rear + abs_rear_lengths[file]
-num_el_abs_rear = num_el_abs_rear -n_file*(sw - 1)
+num_el_abs_rear = num_el_abs_rear -n_file*(n - 1)
 n_file = 0
 for file, length in abs_front_lengths.items():
     print(f"File: {file}, lenght 'ABS_FRONT_ON_OFF': {length}")
     n_file = n_file+1
     num_el_abs_front = num_el_abs_front + abs_front_lengths[file]
-num_el_abs_front = num_el_abs_front -n_file*(sw - 1)
+num_el_abs_front = num_el_abs_front -n_file*(n - 1)
 
 print("The correspondig total ABS state values  are: ", num_el_abs_front , " for front and ", num_el_abs_rear, " for rear")
 num_el_abs = min(num_el_abs_front, num_el_abs_rear, num_el)
@@ -556,3 +528,4 @@ final_ABS_best_channel = np.hstack((final_ABS_best_channel, padding))
 print("Final matrix shape:", final_ABS_best_channel.shape)
 print(final_ABS_best_channel)
 
+'''
