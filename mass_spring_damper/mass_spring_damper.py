@@ -19,8 +19,8 @@ dx = Input('dx') # Velocity of the mass
 F = Input('F') # Force
 
 # List the output of the model
-xk1 = Output('x[k+1]', Fir(parameter_init=init_negexp)(x.tw(0.2))+Fir(parameter_init=init_constant,parameter_init_params={'value':1})(F.last()))
-dxk1 = Output('dx[k+1]', Fir(Fir(parameter_init=init_negexp)(x.tw(0.2))+Fir(parameter_init=init_constant,parameter_init_params={'value':1})(F.last())))
+xk1 = Output('x[k+1]', Fir(W_init='init_negexp')(x.tw(0.2))+Fir(W_init='init_constant',W_init_params={'value':1})(F.last()))
+dxk1 = Output('dx[k+1]', Fir(Fir(W_init='init_negexp')(x.tw(0.2))+Fir(W_init='init_constant',W_init_params={'value':1})(F.last())))
 
 # Add the neural models to the nnodely structure
 mass_spring_damper = Modely(seed=0)
