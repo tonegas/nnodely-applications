@@ -37,7 +37,7 @@ random_seed = 10
 
 # define the road condition to be used for training, and the corresponding dataset:
 # possible options are: 'dry', 'wet', 'snow', 'ice'
-dataset_select = 'dry'
+dataset_select = 'ice'
 
 # check if the dataset_select is valid
 if dataset_select not in ['dry', 'wet', 'snow', 'ice']:
@@ -141,12 +141,14 @@ air_drag_data_driven     = Linear(b=True)(speed.last()**2)  # simple linear (aka
 linear_speed_data_driven = Linear(b=True)(speed.last())     # simple linear (aka fully-connected) layer to estimate the linear drag force
 
 # data-driven layers to estimate the effects of the braking forces, by processing a past window of brake pedal values
-braking_force_data_driven_layer_1 = -Relu(Fir(output_dimension=w, parameter_init = init_negexp, parameter_init_params={'size_index':0, 'first_value':0.01, 'lambda':3})(brake_pedal.sw(n)))
+braking_force_data_driven_layer_1 = -Relu(Fir(output_dimension=w, W_init = init_negexp, 
+                                              W_init_params={'size_index':0, 'first_value':0.01, 'lambda':3})(brake_pedal.sw(n)))
 braking_force_data_driven_layer_2 = Tanh(braking_force_data_driven_layer_1)
 braking_force_data_driven = Linear(b=True)(braking_force_data_driven_layer_2)
 
 # data-driven layers to estimate the effects of the engine force, by processing a past window of motor torque values
-engine_force_step_data_driven_layer_1 = Fir(output_dimension=w, parameter_init = init_negexp, parameter_init_params={'size_index':0, 'first_value':1, 'lambda':3})(motor_torque.sw(n))
+engine_force_step_data_driven_layer_1 = Fir(output_dimension=w, W_init = init_negexp, 
+                                            W_init_params={'size_index':0, 'first_value':1, 'lambda':3})(motor_torque.sw(n))
 engine_force_step_data_driven_layer_2 = Tanh(engine_force_step_data_driven_layer_1)
 motor_force_data_driven = Linear(engine_force_step_data_driven_layer_2)
 
