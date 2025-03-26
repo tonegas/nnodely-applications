@@ -80,3 +80,32 @@ The file presents a neural network for the estimation of the vehicle mass.
 
 ### Road Friction Aware ABS
 The file presents a neural network for the estimation of the road friction coefficient.
+
+## Other Applications
+
+### Sobolev Learning
+The file presents a simple implementation and test of a Sobolev learning via nnodely. The core ideas is presented in:
+
+    @misc{czarnecki2017sobolev,
+          title={Sobolev Training for Neural Networks}, 
+          author={Wojciech Marian Czarnecki and Simon Osindero and Max Jaderberg and Grzegorz Świrszcz and Razvan Pascanu},
+          year={2017},
+          eprint={1706.04859},
+          archivePrefix={arXiv},
+          primaryClass={cs.LG},
+          url={https://arxiv.org/abs/1706.04859}, 
+    }
+
+### Physics-Informed Neural Networks
+The file presents a simple implementation for solving the Burger's equation using Physics-Informed Neural Networks via nnodely. The main idea of PINN is presented in:
+
+    @article{RAISSI2019686,
+        title = {Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations},
+        journal = {Journal of Computational Physics},
+        volume = {378},
+        pages = {686-707},
+        year = {2019},
+        issn = {0021-9991},
+        doi = {https://doi.org/10.1016/j.jcp.2018.10.045},
+        author = {M. Raissi and P. Perdikaris and G.E. Karniadakis},
+    }
