@@ -83,6 +83,21 @@ The file presents a neural network for the estimation of the road friction coeff
 
 ## Other Applications
 
+### Equation Learner Network
+The file presents a simple example of the Equation Learner Network via nnodely. The core ideas is presented in:
+
+    @article{perezvilleda2023learning,
+        title = {Learning and extrapolation of robotic skills using task-parameterized equation learner networks},
+        journal = {Robotics and Autonomous Systems},
+        volume = {160},
+        pages = {104309},
+        year = {2023},
+        issn = {0921-8890},
+        doi = {https://doi.org/10.1016/j.robot.2022.104309},
+        author = {Hector Perez-Villeda and Justus Piater and Matteo Saveriano},
+        keywords = {Learning from demonstration, Learning parameterized skills, Skill generalization and extrapolation, Equation learner neural networks}
+    }
+
 ### Sobolev Learning
 The file presents a simple implementation and test of a Sobolev learning via nnodely. The core ideas is presented in:
 
