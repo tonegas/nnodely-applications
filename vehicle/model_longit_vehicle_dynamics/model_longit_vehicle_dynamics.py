@@ -1,30 +1,12 @@
-"""                                                                                                                                                                                                                                                                                                                                                                        
-___  ______________ _____ _     _____ _   _ _____     _     _____ _   _ _____ _____ _____    _   _ _____ _   _ _____ _____  _      _____   ________   ___   _   
-|  \/  |  _  |  _  \  ___| |   |_   _| \ | |  __ \   | |   |  _  | \ | |  __ \_   _|_   _|  | | | |  ___| | | |_   _/  __ \| |    |  ___|  |  _  \ \ / / \ | |  
-| .  . | | | | | | | |__ | |     | | |  \| | |  \/   | |   | | | |  \| | |  \/ | |   | |    | | | | |__ | |_| | | | | /  \/| |    | |__    | | | |\ V /|  \| |  
-| |\/| | | | | | | |  __|| |     | | | . ` | | __    | |   | | | | . ` | | __  | |   | |    | | | |  __||  _  | | | | |    | |    |  __|   | | | | \ / | . ` |  
-| |  | \ \_/ / |/ /| |___| |_____| |_| |\  | |_\ \   | |___\ \_/ / |\  | |_\ \_| |_  | |_   \ \_/ / |___| | | |_| |_| \__/\| |____| |___   | |/ /  | | | |\  |_ 
-\_|  |_/\___/|___/ \____/\_____/\___/\_| \_/\____/   \_____/\___/\_| \_/\____/\___/  \_(_)   \___/\____/\_| |_/\___/ \____/\_____/\____/   |___/   \_/ \_| \_(_)
-                                                                                                                                                                
-This tutorial implements a physics-driven neural model of the vehicle longitudinal dynamics. 
-This model is depicted in Fig. 2 of the paper titled:
-
-"Modelling longitudinal vehicle dynamics with neural networks"
-
-(available at https://www.tandfonline.com/doi/full/10.1080/00423114.2019.1638947)                                                                                                                                                                          
-""" 
-
-import sys
 import os
 import numpy as np
-# print the directory where the script is located
-print(os.path.dirname(os.path.realpath(__file__)))
 
 from nnodely import *
-from nnodely.earlystopping import select_best_model
+from nnodely.support.earlystopping import select_best_model
+from nnodely.support.jsonutils import plot_graphviz_structure
 
 # Create nnodely structure
-vehicle = nnodely(visualizer=MPLVisualizer(),seed=2) #MPLVisualizer()
+vehicle = nnodely(visualizer=MPLVisualizer())
 
 # Dimensions of the layers
 n  = 25
@@ -53,7 +35,6 @@ out = Output('accelleration', air_drag_force+breaking_force+gravity_force+engine
 vehicle.addModel('acc',[out])
 vehicle.addMinimize('acc_error', acc.last(), out, loss_function='rmse')
 vehicle.neuralizeModel(0.05)
-#vehicle.neuralizeModel(0.05)
 
 # Load the training and the validation dataset
 data_struct = ['vel','trq','brk','gear','alt','acc']
