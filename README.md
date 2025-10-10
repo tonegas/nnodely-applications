@@ -1,6 +1,6 @@
 # nnodely Applications
 Applications of Model-Structured Neural Networks using nnodely.
-This repository contains a list of applications of the nnodely framework with relative reference.
+This repository contains a list of applications of the nnodely framework with the related references.
 
 ## General Applications
 ### Mass-Spring-Damper System
@@ -17,7 +17,7 @@ The network estimate the value of the function with a family of models.
 
 ## Vehicle Applications
 ### Longitudinal Vehicle Dynamics
-The file presents the modeling of the longitudinal vehicle dynamics presented in:
+The file presents the modeling of the longitudinal vehicle dynamics described in:
 
     @article{DaLio2020Modelling,
         author = {Mauro Da Lio, Daniele Bortoluzzi and Gastone Pietro Rosati Papini},
@@ -32,7 +32,7 @@ The file presents the modeling of the longitudinal vehicle dynamics presented in
     }
 
 ### Lateral Vehicle Dynamics
-The file presents the modeling of the lateral vehicle dynamics presented in:
+The file presents the modeling of the lateral vehicle dynamics described in:
 
     @article{DaLio2020Mental,
       author={Da Lio, Mauro and Donà, Riccardo and Papini, Gastone Pietro Rosati and Biral, Francesco and Svensson, Henrik},
@@ -46,7 +46,7 @@ The file presents the modeling of the lateral vehicle dynamics presented in:
     }
 
 ### Control Steer Car Parking
-The file presents a neural network for the control of the steering angle for parking maneuvers presented in:
+The file presents a neural network for the control of the steering angle for parking maneuvers, as described in:
 
     @article{Pagot2023Fast,
       author={Pagot, Edoardo and Piccinini, Mattia and Bertolazzi, Enrico and Biral, Francesco},
@@ -60,8 +60,7 @@ The file presents a neural network for the control of the steering angle for par
     }
 
 ### Control Steer Artificial Race Driver
-The file presents a neural network for the control of the steering angle for an artificial race driver
-presented in:
+The file presents a neural network for the control of the steering angle for an artificial race driver, as described in:
 
     @article{piccinini2023physics,
       author={Piccinini, Mattia and Taddei, Sebastiano and Larcher, Matteo and Piazza, Mattia and Biral, Francesco},
@@ -75,11 +74,33 @@ presented in:
       doi={10.1109/ACCESS.2023.3274836}
     }
 
+    @INPROCEEDINGS{piccinini2025model,
+      author={Piccinini, Mattia and Mungiello, Aniello and Jank, Georg and Papini, Gastone Pietro Rosati and Biral, Francesco and Betz, Johannes},
+      booktitle={2025 IEEE 28th International Conference on Intelligent Transportation Systems (ITSC)}, 
+      title={Model-Structured Neural Networks to Control the Steering Dynamics of Autonomous Race Cars}, 
+      year={2025},
+      volume={},
+      number={},
+      pages={},
+      note={accepted}
+    }
+
 ### Vehicle Mass Estimation
 The file presents a neural network for the estimation of the vehicle mass.
 
 ### Road Friction Aware ABS
-The file presents a neural network for the estimation of the road friction coefficient.
+The file presents a neural network for a road friction-aware ABS system, by learning the longitudinal vehicle dynamics in different road conditions. This is described in:
+
+    @ARTICLE{Piccinini_2025_RoadFrictionAwareABS,
+      author={Piccinini, Mattia and Zumerle, Matteo and Betz, Johannes and Pietro Rosati Papini, Gastone},
+      journal={IEEE Open Journal of Intelligent Transportation Systems}, 
+      title={A Road Friction-Aware Anti-Lock Braking System Based on Model-Structured Neural Networks}, 
+      year={2025},
+      volume={6},
+      number={},
+      pages={522-536},
+      doi={10.1109/OJITS.2025.3563347}
+    }
 
 ## Other Applications
 
