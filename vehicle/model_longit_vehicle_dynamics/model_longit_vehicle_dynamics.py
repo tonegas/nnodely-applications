@@ -6,7 +6,7 @@ from nnodely.support.earlystopping import select_best_model
 from nnodely.support.jsonutils import plot_graphviz_structure
 
 # Create nnodely structure
-vehicle = nnodely(visualizer=MPLVisualizer())
+vehicle = nnodely(visualizer=MPLVisualizer(), workspace=os.path.join(os.path.dirname(os.getcwd()), 'results'))
 
 # Dimensions of the layers
 n  = 25
@@ -35,6 +35,7 @@ out = Output('accelleration', air_drag_force+breaking_force+gravity_force+engine
 vehicle.addModel('acc',[out])
 vehicle.addMinimize('acc_error', acc.last(), out, loss_function='rmse')
 vehicle.neuralizeModel(0.05)
+plot_graphviz_structure(vehicle.json, 'vehicle_architecture')
 
 # Load the training and the validation dataset
 data_struct = ['vel','trq','brk','gear','alt','acc']

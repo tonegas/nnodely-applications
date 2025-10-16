@@ -40,7 +40,7 @@ pendolum.trainModel(splits=[70,20,10], lr=0.001, training_params=params)
 sample = pendolum.getSamples(dataset='data', window=1)
 
 pendolum.exportPythonModel()
-pendolum.exportONNX(['theta','torque'],['omega_pred'])
+pendolum.exportONNX(['theta','omega','torque'],['omega_pred'])
 pendolum.exportReport()
 
 newNN = Modely(workspace=workspace)
