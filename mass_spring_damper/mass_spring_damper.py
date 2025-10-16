@@ -44,22 +44,22 @@ data_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'dataset'
 mass_spring_damper.loadData(name='mass_spring_dataset', source=data_folder, format=data_struct, delimiter=';')
 
 #Neural network train not reccurent training
-params = {'num_of_epochs': 100,
+params = {'num_of_epochs': 50,
           'train_batch_size': 128,
           'lr':0.001}
 mass_spring_damper.trainModel(splits=[70,20,10], training_params = params)
 
 # Add visualizer and show the results on the loaded dataset
 vis = MPLVisualizer()
-vis.set_n4m(mass_spring_damper)
-vis.showResult("validation_mass_spring_dataset_0.20")
+vis.setModely(mass_spring_damper)
+vis.showResult()
 
 ## Recurrent training
-params = {'num_of_epochs': 20,
+params = {'num_of_epochs': 10,
           'train_batch_size': 128,
           'lr':0.005}
 #Neural network train not reccurent training
 mass_spring_damper.trainModel(splits=[70,20,10], training_params = params, closed_loop={'x':'x[k+1]'}, prediction_samples=10,step=10)
 
 # Add visualizer and show the results on the loaded dataset
-vis.showResult("validation_mass_spring_dataset_0.20")
+vis.showResults()
