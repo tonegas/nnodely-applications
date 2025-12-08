@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository contains the code for the paper titled "*Model-Structured Neural Networks for Vehicle Dynamics Learning*".
+This repository contains the code for the paper titled "*Model-Structured Neural Networks for Vehicle Dynamics Learning Near the Limits*".
 
 ## Structure
 
