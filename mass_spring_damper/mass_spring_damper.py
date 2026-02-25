@@ -18,22 +18,23 @@ x = Input('x')
 F = Input('F')
 
 # List the output of the model
-x_z_est = Output('x_z_est', Fir(x.tw(1)) + Fir(F.last()))
+x_z_est = Output('x_z_est', Fir(x.tw(0.25)) + Fir(F.last()))
 
 # Add the neural models to the nnodely structure
 mass_spring_damper = Modely(seed=0)
 mass_spring_damper.addModel('x_z_est', x_z_est)
 
 # These functions are used to impose the minimization objectives.
-# Here it is minimized the error between the future position of x get from the dataset x.z(-1)
+# Here it is minimized the error between the future position of x get from the dataset x_r.z(-1)
 # and the estimator designed useing the neural network. The miniminzation is imposed via MSE error.
-mass_spring_damper.addMinimize('next-pos', x.z(-1), x_z_est, 'mse')
+x_r = Input('x_r')
+mass_spring_damper.addMinimize('next-pos', x_r.z(-1), x_z_est, 'mse')
 
 # Nauralize the model and gatting the neural network. The sampling time depends on the datasets.
 mass_spring_damper.neuralizeModel(sample_time = 0.05) # The sampling time depends on the dataset
 
 # Data load
-data_struct = ['time', 'x', 'dx', 'F']
+data_struct = ['time', ('x','x_r'), 'dx', 'F']
 data_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),'dataset','data')
 mass_spring_damper.loadData(name='mass_spring_dataset', source=data_folder, format=data_struct, delimiter=';')
 
@@ -43,7 +44,13 @@ params = {'num_of_epochs': 50,
           'lr':0.001}
 mass_spring_damper.trainAndAnalyze(splits=[70,20,10], training_params = params)
 
+# Inference
+sample = {'F':[0.5], 'x':[0.25, 0.26, 0.27, 0.28, 0.29]}
+results = mass_spring_damper(sample)
+print(results)
+
 # Add visualizer and show the results on the loaded dataset
 vis = MPLVisualizer()
 vis.setModely(mass_spring_damper)
 vis.showResult("mass_spring_dataset_val")
+
