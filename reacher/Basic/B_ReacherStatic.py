@@ -1,5 +1,3 @@
-#dont remove this: 
-# export PYTHONPATH="/Users/zahra/Documents/Mojtaba/Python_libs/nnodely:$PYTHONPATH"
 
 
 import sys
@@ -22,11 +20,6 @@ l2 = Parameter('l2')
 x_out = Output('x_out',(l1 * Cos(theta1.last())) + (l2 * Cos(theta1.last() + theta2.last())))
 y_out = Output('y_out',(l1 * Sin(theta1.last())) + (l2 * Sin(theta1.last() + theta2.last())))
 
-
-#l1 = Parameter('l1',sw=1,dim=1)
-#l2 = Parameter('l2')
-#x_out = Output('x_out',(Fir(W=l1)(Cos(theta1.last()))) + (l2 * Cos(theta1.last() + theta2.last())))
-#y_out = Output('y_out',(Fir(W=l1)(Sin(theta1.last()))) + (l2 * Sin(theta1.last() + theta2.last())))
 
 
 # Model container
