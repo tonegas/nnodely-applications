@@ -43,6 +43,8 @@ params = {'num_of_epochs': 50,
           'train_batch_size': 128,
           'lr':0.001}
 mass_spring_damper.trainAndAnalyze(splits=[70,20,10], training_params = params)
+# Only train without analyze
+# mass_spring_damper.trainModel()
 
 # Inference
 sample = {'F':[0.5], 'x':[0.25, 0.26, 0.27, 0.28, 0.29]}
