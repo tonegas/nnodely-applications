@@ -26,6 +26,7 @@ conda activate <env_name>
 pip install -r requirements.txt
 ```
 - run the training script `train_MS_NN.py` or the online friction estimation script `online_friction_estimation.py`.
+- `online_friction_newplot_v2.py` is the new version for the online friction estimation script which has more detailed plots.
 
 ## Repo Owners
 
