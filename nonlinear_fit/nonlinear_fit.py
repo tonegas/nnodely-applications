@@ -74,7 +74,7 @@ opt_fun.neuralizeModel()
 opt_fun.loadData('dataset', dataset)
 
 # Train the models
-opt_fun.trainModel(splits=[60,10,30], training_params={'num_of_epochs':200,'lr':0.1})
+opt_fun.trainAndAnalyze(splits=[60,10,30], training_params={'num_of_epochs':200,'lr':0.1})
 
 
 

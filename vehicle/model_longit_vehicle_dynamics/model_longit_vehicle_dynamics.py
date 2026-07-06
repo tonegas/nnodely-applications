@@ -6,7 +6,7 @@ from nnodely.support.earlystopping import select_best_model
 from nnodely.support.jsonutils import plot_graphviz_structure
 
 # Create nnodely structure
-vehicle = nnodely(visualizer=MPLVisualizer(), workspace=os.path.join(os.path.dirname(os.getcwd()), 'results'))
+vehicle = nnodely(visualizer=MPLVisualizer(), workspace=os.path.join(os.path.dirname(os.getcwd()), 'model_longit_vehicle_dynamics'))
 
 # Dimensions of the layers
 n  = 25
@@ -35,7 +35,6 @@ out = Output('accelleration', air_drag_force+breaking_force+gravity_force+engine
 vehicle.addModel('acc',[out])
 vehicle.addMinimize('acc_error', acc.last(), out, loss_function='rmse')
 vehicle.neuralizeModel(0.05)
-plot_graphviz_structure(vehicle.json, 'vehicle_architecture')
 
 # Load the training and the validation dataset
 data_struct = ['vel','trq','brk','gear','alt','acc']
@@ -53,7 +52,8 @@ vehicle.filterData(filter_function = filter_function, dataset_name = 'trainingse
 optimizer_params = [{'params':'gravity','weight_decay': 0.1}]
 optimizer_defaults = {'weight_decay': 0.00001}
 training_params = {'num_of_epochs':150, 'val_batch_size':128, 'train_batch_size':128, 'lr':0.00003}
-vehicle.trainModel(train_dataset='trainingset', validation_dataset='validationset', shuffle_data=True,
+vehicle.trainAndAnalyze(train_dataset='trainingset', validation_dataset='validationset', shuffle_data=True,
                    add_optimizer_params=optimizer_params, add_optimizer_defaults=optimizer_defaults, training_params=training_params,
                    select_model=select_best_model)
-
+vehicle.saveModel()
+vehicle.exportONNX()

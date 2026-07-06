@@ -1,6 +1,6 @@
-nnodely==1.5.2
-scipy==1.14.0
-mpld3==0.5.10
+nnodely==1.5.4
+scipy
+mpld3
 ipykernel==6.29.5
-pandas==2.0.3
+pandas
 jupyter
