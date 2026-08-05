@@ -1,0 +1,8 @@
+numpy
+pandas
+matplotlib
+torch
+tqdm
+nnodely
+adam
+cycler
