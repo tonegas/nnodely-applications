@@ -16,8 +16,8 @@ MSNN = nnodely(workspace="trained_models")
 BBNN = nnodely(workspace="trained_models")
 
 # Load trained models
-MSNN.loadModel("MS_NN")
-BBNN.loadModel("BB_NN")
+MSNN.loadModel("MS_NN_euler_0")
+BBNN.loadModel("BB_NN_0")
 
 MSNN.neuralizeModel()
 BBNN.neuralizeModel()
