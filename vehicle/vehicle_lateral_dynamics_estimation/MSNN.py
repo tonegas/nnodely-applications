@@ -86,7 +86,7 @@ def initialize_model(path_folder, data_stats):
     # Outputs
     yaw_rate_out = Output('yaw_rate',yaw_rate_est)                                              # yaw rate [deg/s]    
     yaw_out      = Output('yaw_angle',Integrate(yaw_rate_est,int_name='yawAngle_int',
-                                                der_name='yawRate_int',method='Trapezoidal'))       # yaw angle [deg]
+                                                der_name='yawRate_int',method='trapezoidal'))       # yaw angle [deg]
 
     # Minimization and neuralization
     model.addModel('model',[yaw_rate_out,yaw_out])
