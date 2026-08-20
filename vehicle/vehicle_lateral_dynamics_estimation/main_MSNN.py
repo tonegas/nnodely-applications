@@ -92,7 +92,7 @@ if analyse == True:
     yawrate_rmse = np.mean(rmse_yawrate_list)
     yawrate_rmse_std = np.std(rmse_yawrate_list) / np.sqrt(N_MODELS) # Standard error of the mean
 
-    total_rmse_list = 0.5 * (np.array(rmse_yaw_list) + 0.1*np.array(rmse_yawrate_list))
+    total_rmse_list = 0.1*np.array(rmse_yaw_list) + np.array(rmse_yawrate_list)
     total_rmse = np.mean(total_rmse_list)
     total_rmse_std = np.std(total_rmse_list) / np.sqrt(N_MODELS) # Standard error of the mean
 
