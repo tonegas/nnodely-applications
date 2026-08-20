@@ -10,7 +10,7 @@ torch.set_default_device('cpu')
 torch.set_default_dtype(torch.float32)
 
 
-DATASET_NAME              = "dataset_sin"
+DATASET_NAME              = "dataset"
 PLOT_VIZ                  = False
 SEED                      = 345
 
@@ -25,25 +25,25 @@ if not os.path.exists(WS):
 
 z1_model = nnodely(visualizer=TextVisualizer(), seed=None, workspace=WS)
 
-# def friction(x, K_v, K_c, K_s, q_s):
-#     import torch 
-#     sign = torch.tanh(50 * x)   
+def friction(x, K_v, K_c, K_s, q_s):
+    import torch 
+    sign = torch.tanh(50 * x)   
 
-#     friction = (
-#         K_v * x
-#         + sign * (
-#             K_c
-#             + (K_s - K_c) * torch.exp(-(torch.abs(x) / q_s)**2)
-#         )
-#     )
-
-#     return friction
-
-def friction(x, K_v):
-
-    friction = K_v * x
+    friction = (
+        K_v * x
+        + sign * (
+            K_c
+            + (K_s - K_c) * torch.exp(-(torch.abs(x) / q_s)**2)
+        )
+    )
 
     return friction
+
+# def friction(x, K_v):
+
+#     friction = K_v * x
+
+#     return friction
 
 
 def ddq(q, dq, tau):
@@ -51,7 +51,7 @@ def ddq(q, dq, tau):
     from adam.pytorch.computation_batch import KinDynComputationsBatch
     torch.set_default_device('cpu')
     torch.set_default_dtype(torch.float32)
-    robot = '/home/dema/projects/friction_z1/z1_description.urdf'  
+    robot = '/home/davide/phd/nnodely-related/nnodely-applications/friction_learning_z1/z1_description.urdf'  
 
     joints_name_list = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
     kinDyn = KinDynComputationsBatch(robot, joints_name_list, device='cpu', dtype=torch.float32)
@@ -207,8 +207,6 @@ ddq_target = Concatenate(ddq_target, ddq6_target.last())
 # Build the model
 z1_model.addModel('friction', [q_out, dq_out, ddq_out])
 
-# z1_model.addMinimize('ddq_error', ddq_out, ddq_target, loss_function='mse')
-# z1_model.addMinimize('dq_error', dq_out, dq_target, loss_function='mse')
 z1_model.addMinimize('q_error', q_out, q_target, loss_function='mse')
 
 z1_model.neuralizeModel(0.01)
@@ -240,10 +238,8 @@ params = {
     'test_batch_size': 256,
     'train_dataset': train_dataset_name,
     'validation_dataset': validation_dataset_name,
-    # 'test_dataset': test_dataset_name,
     'lr': 0.1,
     'shuffle_data': True,
-    # 'splits': [80, 20, 0],
     'select_model': select_best_model,
     'prediction_samples': -1,
     'step': -1,
@@ -253,8 +249,6 @@ params = {
         'error': 'q_error',
     },
     'minimize_gain' : {
-        # 'ddq_error': 1.0,
-        # 'dq_error': 0.5,
         'q_error': 1
     }
 }
@@ -268,59 +262,18 @@ params = {
     'test_batch_size': 256,
     'train_dataset': train_dataset_name,
     'validation_dataset': validation_dataset_name,
-    # 'test_dataset': test_dataset_name,
     'lr': 0.001,
     'shuffle_data': True,
-    # 'splits': [80, 20, 0],
     'select_model': select_best_model,
-    'prediction_samples': -1,
-    'step': -1,
+    'prediction_samples': 100,
+    'step': 100,
     'early_stopping': earlystopping.early_stop_patience,
     'early_stopping_params': {
         'patience': 5,
         'error': 'q_error',
     },
-    'minimize_gain' : {
-        # 'ddq_error': 1.0,
-        # 'dq_error': 0.5,
-        'q_error': 1
-    }
 }
 
 z1_model.trainModel(training_params=params)
 
 r2 = z1_model.analyzeModel(test_dataset_name, tag='test', minimize_gain={'q_error': 1.0}, prediction_samples=-1, step=-1, batch_size=256)
-
-# params = {
-#     'num_of_epochs': 2,
-#     'train_batch_size': 256,
-#     'val_batch_size': 256,
-#     'test_batch_size': 256,
-#     'train_dataset': train_dataset_name,
-#     'validation_dataset': validation_dataset_name,
-#     # 'test_dataset': test_dataset_name,
-#     'lr': 0.001,
-#     'shuffle_data': True,
-#     # 'splits': [80, 20, 0],
-#     'select_model': select_best_model,
-#     'prediction_samples': 100,
-#     'step': 100,
-#     'early_stopping': earlystopping.early_stop_patience,
-#     'early_stopping_params': {
-#         'patience': 5,
-#         'error': 'ddq_error',
-#     },
-#     # 'minimize_gain' : {
-#     #     'ddq_error': 1.0,
-#     #     'dq_error': 0.5,
-#     #     'q_error': 0.1
-#     # }
-# }
-
-# train_losses, val_losses = z1_model.trainModel(training_params=params)
-
-# np.savez("losses_25_3.npz", train_losses=train_losses, val_losses=val_losses)
-RES_DIR = os.path.join(WS, "results")
-np.savez(os.path.join(RES_DIR, "r2_score_10_5.npz"), r2=r2)
-
-z1_model.saveModel("msnn_10_5")
