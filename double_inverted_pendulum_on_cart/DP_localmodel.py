@@ -16,7 +16,7 @@ import pandas as pd
 
 sys.path.append(os.getcwd())
 
-workspace = os.path.join(os.getcwd(), "results")
+workspace = os.path.join(os.getcwd(), "saved_nets")
 torch.set_num_threads(5)
 
 # ---- INPUTS ----
@@ -95,7 +95,7 @@ th1_z_est = Output('th1_est', theta1_est)
 omega2_z_est = Output('omega2_est', omega2_est)
 th2_z_est = Output('th2_est', theta2_est)
 
-test_data_folder = os.path.join(os.path.abspath(''), 'DIPC/data', 'data_DP_test')
+test_data_folder = os.path.join(os.path.abspath(''), 'data', 'data_DP_test')
 test_data = pd.DataFrame()
 for file in os.listdir(test_data_folder):
     if file.endswith('.csv'):
@@ -104,7 +104,7 @@ for file in os.listdir(test_data_folder):
         test_data = pd.concat([test_data, data], ignore_index=True)
 test_data = test_data.astype(np.float64)
 
-data_folder = os.path.join(os.path.abspath(''),'DIPC/data/data_DP')
+data_folder = os.path.join(os.path.abspath(''), 'data/data_DP')
 data_train = pd.DataFrame()
 for file in os.listdir(data_folder):
     if file.endswith(".csv"):
@@ -116,9 +116,7 @@ data_train = data_train.astype(np.float64)
 # cols = ['time', 'action', 'Xpos', 'Xth1', 'Xth2', 'Xvelocity', 'Xth1_dot', 'Xth2_dot', 'Xddx', 'Xddth1', 'Xddth2']
 cols = ['time', 'action', ('Xpos', 'int_x'), ('Xth1', 'int_th1'), ('Xth2', 'int_th2'), ('Xvelocity', 'int_xdot'), ('Xth1_dot', 'int_th1_dot'), ('Xth2_dot', 'int_th2_dot'), 'Xddx', 'Xddth1', 'Xddth2']
 fractions = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.25, 0.2, 0.15, 0.1]
-# fractions = [1.0]
 seeds = [19, 45, 79, 181, 331]
-# seeds = [42]
 df = pd.DataFrame(columns=['model_name', 'fraction', 'seed', 'train_samples', 'val_samples', 'train_loss', 'val_loss', 'test_loss'])
 
 for fraction in fractions:
@@ -140,7 +138,7 @@ for fraction in fractions:
                 X_val[new_col] = X_val[col]
                 
         model_name = f'eq_learner_fraction_{fraction * 100:.0f}_seed_{seed}'
-        eqL = Modely(visualizer=TextVisualizer())
+        eqL = Modely(visualizer=TextVisualizer(), workspace=workspace)
         
         eqL.addModel('double_pend_learner', [acc_cart_z_est, th1_ddot_z_est, th2_ddot_z_est, xdot_z_est, x_z_est, omega1_z_est, th1_z_est, omega2_z_est, th2_z_est])
 
@@ -179,7 +177,6 @@ for fraction in fractions:
 # Analyze results
 cols = ['time','action',('Xpos', 'int_x'),('Xth1', 'int_th1'),('Xth2', 'int_th2'),('Xvelocity', 'int_xdot'),('Xth1_dot', 'int_th1_dot'),('Xth2_dot', 'int_th2_dot'),'Xddx','Xddth1','Xddth2']
 train_data = [100, 80, 70, 50, 40, 30, 25, 20, 15, 10, 5, 1]
-seeds = [19, 45, 79, 181, 331]
 
 df = pd.DataFrame(columns=['model_name', 'fraction', 'seed', 'total_mse', 'acc_cart_mse', 'th1_ddot_mse', 'th2_ddot_mse'])
 for fraction in train_data:

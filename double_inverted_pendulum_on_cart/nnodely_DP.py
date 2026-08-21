@@ -8,7 +8,7 @@ import torch
 
 sys.path.append(os.getcwd())
 
-workspace = os.path.join(os.getcwd(), "results")
+workspace = os.path.join(os.getcwd(), "saved_nets")
 double_pendulum = Modely(workspace=workspace)
 torch.set_num_threads(10)
 

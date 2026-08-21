@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 sys.path.append(os.getcwd())
 
-workspace = os.path.join(os.getcwd(), "results")
+workspace = os.path.join(os.getcwd(), "saved_nets")
 torch.set_num_threads(5)
 
 def init_random_range(indexes, params_size, dict_param={'min_value': 0.0, 'max_value': 1.0}):
@@ -93,7 +93,7 @@ est_theta2 = Output('theta2_est', theta2_est)
 est_x = Output('x_est', x_est)
 
 # Load test data
-test_data_folder = os.path.join(os.path.abspath(''),'DIPC/data/data_DP_test')
+test_data_folder = os.path.join(os.path.abspath(''),'data/data_DP_test')
 test_data = pd.DataFrame()
 for file in os.listdir(test_data_folder):
     if file.endswith(".csv"):
@@ -103,7 +103,7 @@ for file in os.listdir(test_data_folder):
 test_data = test_data.astype(np.float64)
 
 # Multiple seed and multiple fraction training
-data_folder = os.path.join(os.path.abspath(''),'DIPC/data/data_DP')
+data_folder = os.path.join(os.path.abspath(''),'data/data_DP')
 data_train = pd.DataFrame()
 for file in os.listdir(data_folder):
     if file.endswith(".csv"):
@@ -139,7 +139,7 @@ for fraction in fractions:
                 X_val[new_col] = X_val[col]
                 
         model_name = f'bb_fraction_{fraction * 100:.0f}_seed_{seed}'
-        bb = Modely(visualizer=TextVisualizer())
+        bb = Modely(visualizer=TextVisualizer(), workspace=workspace)
         
         bb.addModel('double_pend_learner', [est_theta1_dotdot, est_theta2_dotdot, est_x_dotdot, est_theta1dot, est_theta2dot, est_xdot, est_theta1, est_theta2, est_x])
 
@@ -161,7 +161,7 @@ for fraction in fractions:
         step = None
         early_stop_patience = 20
         lr = 0.0010466265184194325
-        params = {'train_batch_size': 256, 'num_of_epochs': 10000}
+        params = {'train_batch_size': 256, 'num_of_epochs': 1000}
         
         bb.trainModel(train_dataset='data', validation_dataset='val_data', optimizer='Adam', prediction_samples=prediction_samples, step=step, training_params=params, early_stopping=earlystopping.early_stop_patience,  
                                                                     early_stopping_params={'patience':early_stop_patience}, select_model=earlystopping.select_best_model, lr=lr)
@@ -179,7 +179,6 @@ for fraction in fractions:
 # Analyze results
 cols = ['time','action',('Xpos', 'int_x'),('Xth1', 'int_th1'),('Xth2', 'int_th2'),('Xvelocity', 'int_xdot'),('Xth1_dot', 'int_th1_dot'),('Xth2_dot', 'int_th2_dot'),'Xddx','Xddth1','Xddth2']
 train_data = [100, 80, 70, 50, 40, 30, 25, 20, 15, 10, 5, 1]
-seeds = [19, 45, 79, 181, 331]
 
 df = pd.DataFrame(columns=['model_name', 'fraction', 'seed', 'total_mse', 'acc_cart_mse', 'th1_ddot_mse', 'th2_ddot_mse'])
 for fraction in train_data:

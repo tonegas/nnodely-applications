@@ -37,12 +37,6 @@ python DP_localmodel.py
 The training scripts run multiple dataset fractions and random seeds, so they
 may require significant time and memory.
 
-## Known path issue
-
-`DP_black_box.py`, `DP_equation_learner.py`, and `DP_localmodel.py` currently
-refer to `DIPC/data/...`. Replace those paths with `data/data_DP/...` before
-running them, or provide a compatible `DIPC` directory.
-
 ## References
 
 - [nnodely](https://github.com/nnodely/nnodely)
