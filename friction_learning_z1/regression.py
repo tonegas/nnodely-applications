@@ -24,9 +24,16 @@ if not os.path.exists(WS):
 
 z1_model = nnodely(visualizer=TextVisualizer(), seed=SEED, workspace=WS)
 
-def friction(x, K_v):
+def friction(x, K_v, K_c, K_s, q_s):
+    import torch 
+    sign = torch.tanh(50 * x)   
+
     friction = (
         K_v * x
+        + sign * (
+            K_c
+            + (K_s - K_c) * torch.exp(-(torch.abs(x) / q_s)**2)
+        )
     )
 
     return friction
