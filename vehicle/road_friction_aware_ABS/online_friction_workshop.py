@@ -234,71 +234,81 @@ grip_time  = df.columns[0]   # time values
 grip_value = df.columns[1]   # friction coefficient values
 
 
-# plot the acceleration signals and the best channel determined by the MSPRT
-plt.figure(figsize=(14, 12))
+# Mappatura MSPRT -> mu
+# best_channel_msprt è probabilmente indicizzato da 0 a 3, quindi faccio +1 prima della mappatura
+msprt_to_mu = {1: 1.0, 2: 0.75, 3: 0.5, 4: 0.25}
+MSPRTmu = np.array([msprt_to_mu[ch + 1] for ch in best_channel_msprt])
 
-# plot the best channel
-plt.subplot(3, 1, 1)
+plt.figure(figsize=(14, 9))
+
+# =========================
+# Subplot 1: friction coeff + MSPRTmu
+# =========================
+plt.subplot(2, 1, 1)
 plt.axvspan(0, 35, color='gray', alpha=0.35, zorder=0)
 plt.axvspan(43, 89, color='gray', alpha=0.35, zorder=0)
 plt.axvspan(94, 100, color='gray', alpha=0.35, zorder=0)
+
 ax = plt.gca()
 plt.ylabel(r'Friction coeff [-]')
 plt.grid()
-plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=False))
 plt.xlim(0, 100)
-plt.ylim(0, 1)
+plt.ylim(0, 1.05)
+
 for x1, x2 in [(35, 43), (89, 94)]:
-    ax.add_patch(plt.Rectangle((x1, 0), x2 - x1, 1, fill=False, edgecolor='limegreen', linewidth=4, zorder=10))
-plt.axhline(y=1, color='#1f77b4', linestyle='--', linewidth=1.5, label=r'Dry')  
-plt.axhline(y=0.75, color='#ff7f0e', linestyle='--',linewidth=1.5,label=r'Wet')  
-plt.axhline(y=0.5, color='#2ca02c', linestyle='--', linewidth=1.5,label=r'Snow')  
-plt.axhline(y=0.25, color='#d62728', linestyle='--', linewidth=1.5,label=r'Ice') 
-plt.plot(df[grip_time], df[grip_value],  color='black', linewidth=3, label=r'Friction coeff')
+    ax.add_patch(
+        plt.Rectangle((x1, 0), x2 - x1, 1.05, fill=False,
+                      edgecolor='limegreen', linewidth=4, zorder=10)
+    )
+
+plt.axhline(y=1.0, color='#1f77b4', linestyle='--', linewidth=1.5, label=r'Dry')
+plt.axhline(y=0.75, color='#ff7f0e', linestyle='--', linewidth=1.5, label=r'Wet')
+plt.axhline(y=0.5, color='#2ca02c', linestyle='--', linewidth=1.5, label=r'Snow')
+plt.axhline(y=0.25, color='#d62728', linestyle='--', linewidth=1.5, label=r'Ice')
+
+plt.plot(df[grip_time], df[grip_value], color='black', linewidth=3, label=r'Friction coeff')
+plt.plot(time, MSPRTmu, color='magenta', linewidth=3, label=r'MSPRT$\mu$')
+
 plt.legend(fontsize=11, loc='best', ncol=2, facecolor='white', framealpha=1.0)
-yticks_values = np.arange(0, 1.4, 0.2) 
+yticks_values = np.arange(0, 1.1, 0.25)
 plt.yticks(yticks_values)
 plt.tick_params(axis='x', labelbottom=False)
 
-plt.subplot(3, 1, 2) 
+# =========================
+# Subplot 2: acceleration signals
+# =========================
+plt.subplot(2, 1, 2)
 plt.axvspan(0, 35, color='gray', alpha=0.35, zorder=0)
 plt.axvspan(43, 89, color='gray', alpha=0.35, zorder=0)
 plt.axvspan(94, 100, color='gray', alpha=0.35, zorder=0)
+
 ax = plt.gca()
 road_strings = ['Dry', 'Wet', 'Snow', 'Ice']
+
 plt.plot(time, acc_value[:num_el], linewidth=3, color='black', label=r'$a_x$ meas.')
+
 for i in range(n_channels):
-  plt.plot(time, predictions[i], linewidth=2, label=r'model ' + str(i+1) + ' (' + road_strings[i] + ')')
-# plt.xlabel(r'Time [s]')
+    plt.plot(time, predictions[i], linewidth=2,
+             label=r'model ' + str(i+1) + ' (' + road_strings[i] + ')')
+
+plt.xlabel(r'Time [s]')
 plt.ylabel(r'$a_x$ [m/s$^2$]')
 plt.legend(fontsize=11, loc='lower left', ncol=2, facecolor='white', framealpha=1.0)
 plt.grid()
 plt.xlim(0, 100)
 plt.ylim(-13, 3)
+
 for x1, x2 in [(35, 43), (89, 94)]:
-    ax.add_patch(plt.Rectangle((x1, -13), x2 - x1, 16, fill=False, edgecolor='limegreen', linewidth=4, zorder=10))
-yticks_values = np.arange(-13, 3, 3)  
+    ax.add_patch(
+        plt.Rectangle((x1, -13), x2 - x1, 16, fill=False,
+                      edgecolor='limegreen', linewidth=4, zorder=10)
+    )
+
+yticks_values = np.arange(-13, 4, 3)
 plt.yticks(yticks_values)
-plt.tick_params(axis='x', labelbottom=False) 
 
-# plot the best channel
-plt.subplot(3, 1, 3)
-plt.axvspan(0, 35, color='gray', alpha=0.35, zorder=0)
-plt.axvspan(43, 89, color='gray', alpha=0.35, zorder=0)
-plt.axvspan(94, 100, color='gray', alpha=0.35, zorder=0)
-ax = plt.gca()
-plt.plot(time, best_channel_msprt+1, linewidth=6, color='grey', label=r'MSPRT')
-plt.plot(time, best_channel_wta+1, ':', linewidth=2,  color='mistyrose', label=r'WTA')
-plt.xlabel(r'Time [s]')
-plt.ylabel(r'Index selected model $i$')
-plt.legend(fontsize=11, facecolor='white', framealpha=1.0, markerscale = 5)
-plt.grid()
-plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
-plt.xlim(0, 100)
-ymin, ymax = ax.get_ylim()
-for x1, x2 in [(35, 43), (89, 94)]:
-    ax.add_patch(plt.Rectangle((x1, ymin), x2 - x1, ymax - ymin, fill=False, edgecolor='limegreen', linewidth=4, zorder=10))
-
+plt.tight_layout()
 plt.show()
 
 
